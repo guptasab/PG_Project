@@ -4,15 +4,24 @@ A fast-paced, high-octane 3D First Person Shooter inspired by the Roblox hit gam
 
 ---
 
-## 🎮 Play Immediately
+## ⚡ Easy Mode & Non-Targeting Bots (10x Easier!)
 
-The game server is currently running on **Port 5000**:
-👉 **Open in browser**: [http://localhost:5000](http://localhost:5000)
-
-Or launch anytime using:
-```bash
-./play.sh
-```
+- **Bots Do Not Target You**: Bots are now peaceful practice targets that roam between waypoints or fire harmlessly into the distance. They will never chase, hunt, or shoot at you.
+- **Bot Damage is 0**: You cannot be eliminated by bots.
+- **Super Player Vitals**: 500 Health + 500 Shield with almost instantaneous continuous shield regeneration.
+- **1-2 Shot Gun Power**:
+  - Assault Rifle: 45 body / 90 head (1-2 shot kill)
+  - Pump Shotgun: 224 damage burst (instant kill)
+  - Viper Sniper: 250 body / 500 head (instant one-shot obliteration)
+  - Dual SMGs: 32 body / 64 head (80 round mag)
+  - Revolver: 110 body / 220 head (instant kill)
+  - Melee Knife / Katana: 150 - 250 damage (one-hit kill)
+- **Massive Magazine Capacities & Fast Reload**: Double ammo capacity on all guns with 0.6s - 0.8s reload time.
+- **Pinpoint Laser Accuracy**: Recoil reduced by 90% and bullet spread eliminated.
+- **10x Reward Rain**:
+  - Eliminations award **+50 Gems** (was 10), and Headshots award **+100 Gems** (was 15)!
+  - Quests require fewer kills (1-2 kills) and award **15 - 30 Keys** each!
+  - 25 Starter Keys & 500 Starter Gems so you can buy weapons and open crates right away.
 
 ---
 
@@ -42,18 +51,32 @@ Or launch anytime using:
 
 ---
 
-### 3. 🔫 Weapons Arsenal
+### 3. 🔫 Weapons & Heavy Ordnance Arsenal
 
-All weapons feature custom procedural 3D models with viewmodel recoil, muzzle flash, procedural sway, and bullet tracers:
+1. **Rival RPG-7 (Rocket Launcher)**:
+   - High-explosive conical rocket with smoke trail and fiery exhaust light.
+   - Massive **350 damage AOE explosion** with expanding fireball and shockwave ring!
+   - **Rocket Jump**: Aim at the ground while jumping to propel yourself sky-high!
+2. **Apex Minigun**: Heavy rotary Gatling cannon, 1400 RPM, 200-round drum magazine, spinning barrels animation.
+3. **Hyper Laser Beam**: Continuous cyan plasma energy beam with instantaneous impact.
+4. **Rival AR-15**: Rapid assault rifle with laser accuracy, 60-round mag, 45 dmg.
+5. **Pump Shotgun**: Scatter blast (224 total damage), 12 shells.
+6. **Viper Sniper**: High-power telescopic scope, 250 body / 500 headshot damage.
+7. **Dual Micro-SMGs**: 1050 RPM, 80-round magazine.
+8. **Combat Pistol & Rival Revolver**: High-power sidearms.
+9. **Tactical Knife & Neon Katana**: High-frequency energy blades (150 - 250 dmg).
+10. **Frag Grenades (<kbd>G</kbd> key)**: Throwable pineapple grenades that bounce off walls and detonate after 1.4s with fiery splash damage.
 
-1. **Rival AR-15** (Assault Rifle): Full-auto, 24 dmg body / 48 head, 600 RPM, 30 rounds *(Free / Starter)*
-2. **Pump Shotgun**: Semi-auto, 8 pellets x 13 dmg (up to 104 body / 187 head), 6 rounds *(Cost: 5 Keys 🔑)*
-3. **Viper Sniper**: Bolt-action with full-screen sniper scope, 110 body / 242 head (one-shot kill!), 5 rounds *(Cost: 10 Keys 🔑)*
-4. **Dual Micro-SMGs**: Ultra-high fire rate (950 RPM), fast run speed, 40 rounds *(Cost: 12 Keys 🔑)*
-5. **Combat Pistol**: Semi-auto sidearm, 34 body / 68 head, 12 rounds *(Free / Starter)*
-6. **Rival Revolver**: Heavy sidearm punch, 65 body / 143 head, 6 rounds *(Cost: 8 Keys 🔑)*
-7. **Tactical Knife**: Fast melee slash, 75 dmg *(Free / Starter)*
-8. **Neon Katana**: High-frequency energy blade, 120 dmg *(Cost: 15 Keys 🔑)*
+---
+
+### 4. 🚀 New Special Gameplay Mechanics
+
+- **Rocket Jumping**: Jump and fire your RPG-7 at your feet to launch into the sky with zero self-damage.
+- **Explosive Hazard Barrels**: Red toxic/fuel barrels scattered across all maps (Backrooms, Arena, Warehouse) that detonate into fiery chain reactions when shot!
+- **Third Person View Toggle (<kbd>V</kbd> key)**: Seamlessly toggle between First Person FPS view and Third Person over-the-shoulder view with full character model and animations!
+- **New Skins**:
+  - **Chroma RGB Gamer** (Legendary): Mechanical animated RGB lighting that pulses with color.
+  - **Quantum Portal** (Mythic): Singularity dark matter with glowing cyan and violet rift energy.
 
 ---
 

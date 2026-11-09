@@ -185,6 +185,8 @@
             <div class="control-key-card"><kbd>C</kbd> or <kbd>CTRL</kbd><span>Slide Dash (Sprint + Slide)</span></div>
             <div class="control-key-card"><kbd>R</kbd><span>Reload</span></div>
             <div class="control-key-card"><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd><span>Primary / Secondary / Melee</span></div>
+            <div class="control-key-card"><kbd>G</kbd><span>Throw Frag Grenade (AOE Blast!)</span></div>
+            <div class="control-key-card"><kbd>V</kbd><span>Toggle 1st / 3rd Person View</span></div>
             <div class="control-key-card"><kbd>TAB</kbd><span>Scoreboard</span></div>
             <div class="control-key-card"><kbd>ESC</kbd><span>Pause / Menu</span></div>
           </div>
@@ -211,10 +213,11 @@
         <div class="guide-section">
           <h3>🎯 PRO TIPS FOR SURVIVAL</h3>
           <ul class="tips-list">
-            <li><strong>Aim for the Head:</strong> Headshots deal 2x critical damage with a gold damage number and instant ding sound!</li>
-            <li><strong>Slide to Evade:</strong> Sprinting and pressing <kbd>C</kbd> initiates a high-velocity slide, making you harder for bots to hit.</li>
-            <li><strong>Shield Regeneration:</strong> You have 100 Health + 50 Shield. If you take damage, stay behind cover for 4 seconds to regenerate your shield.</li>
-            <li><strong>Jump Pads in Arena:</strong> Step onto circular glowing pads in the Neon Arena to launch into the air for aerial dominance!</li>
+            <li><strong>RPG Rocket Jumping:</strong> Equip the Rival RPG-7 and shoot at the ground while jumping to rocket-jump high into the sky!</li>
+            <li><strong>Explosive Barrels:</strong> Red hazard barrels across all maps blow up when shot, wiping out clusters of bots!</li>
+            <li><strong>Frag Grenades:</strong> Press <kbd>G</kbd> to throw a bouncing grenade for devastating AOE splash damage.</li>
+            <li><strong>Third Person Mode:</strong> Press <kbd>V</kbd> anytime to switch between 1st Person and 3rd Person over-the-shoulder view.</li>
+            <li><strong>Passive Bots (Easy Mode):</strong> Bots do not target or shoot at you, so you can practice, explore, and dominate peacefully!</li>
           </ul>
         </div>
       </div>
@@ -487,7 +490,7 @@
           <span class="team-label">BOTS</span>
         </div>
       </div>
-      <div class="match-goal-text">FIRST TO 20 KILLS</div>
+      <div class="match-goal-text">FIRST TO 15 KILLS &bull; <span style="color: #10b981;">EASY MODE: BOTS DO NOT TARGET YOU</span></div>
     </div>
 
     <!-- Kill Feed Top Right -->
@@ -538,7 +541,7 @@
         <div class="vital-bar-bg">
           <div class="vital-bar-fill shield-fill" id="hud-shield-fill" style="width: 100%;"></div>
         </div>
-        <span class="vital-number" id="hud-shield-text">50</span>
+        <span class="vital-number" id="hud-shield-text">500</span>
       </div>
       <!-- Health Bar -->
       <div class="vital-row health-row">
@@ -546,7 +549,7 @@
         <div class="vital-bar-bg">
           <div class="vital-bar-fill health-fill" id="hud-health-fill" style="width: 100%;"></div>
         </div>
-        <span class="vital-number" id="hud-health-text">100</span>
+        <span class="vital-number" id="hud-health-text">500</span>
       </div>
     </div>
 
@@ -577,7 +580,7 @@
     <div class="pointer-lock-prompt" id="pointer-lock-prompt">
       <div class="pl-box">
         <h3>CLICK ANYWHERE TO ENGAGE</h3>
-        <p>[WASD] Move &bull; [Mouse] Aim &bull; [Shift] Sprint &bull; [C/Ctrl] Slide &bull; [Space] Jump &bull; [R] Reload</p>
+        <p>[WASD] Move &bull; [Mouse] Aim &bull; [Shift] Sprint &bull; [C/Ctrl] Slide &bull; [G] Grenade &bull; [V] 3rd Person &bull; [R] Reload</p>
       </div>
     </div>
   </div>

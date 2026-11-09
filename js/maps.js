@@ -93,6 +93,7 @@ export class MapManager {
     this.lights = [];
     this.animatedMeshes = [];
     this.flickerLights = [];
+    this.barrels = [];
   }
 
   clear() {
@@ -108,6 +109,29 @@ export class MapManager {
     this.lights = [];
     this.animatedMeshes = [];
     this.flickerLights = [];
+    this.barrels = [];
+  }
+
+  addExplosiveBarrel(x, y, z) {
+    const barrelGroup = new THREE.Group();
+    const bodyMat = new THREE.MeshStandardMaterial({ color: 0xd90429, roughness: 0.4, metalness: 0.6 });
+    const stripeMat = new THREE.MeshStandardMaterial({ color: 0xfacc15, emissive: 0xfacc15, emissiveIntensity: 0.6 });
+
+    const drum = new THREE.Mesh(new THREE.CylinderGeometry(0.65, 0.65, 1.5, 16), bodyMat);
+    drum.position.y = 0.75;
+    drum.userData = { isBarrel: true, barrelGroup: barrelGroup };
+    barrelGroup.add(drum);
+
+    const stripe = new THREE.Mesh(new THREE.CylinderGeometry(0.66, 0.66, 0.28, 16), stripeMat);
+    stripe.position.y = 0.75;
+    stripe.userData = { isBarrel: true, barrelGroup: barrelGroup };
+    barrelGroup.add(stripe);
+
+    barrelGroup.position.set(x, y, z);
+    this.mapGroup.add(barrelGroup);
+    this.addBoxCollider(drum);
+    this.barrels.push(barrelGroup);
+    return barrelGroup;
   }
 
   addBoxCollider(mesh) {
@@ -205,6 +229,12 @@ export class MapManager {
     ];
 
     mazeWalls.forEach(w => addWall(w.x, w.z, w.w, w.d));
+
+    // Explosive Hazard Barrels in Backrooms
+    this.addExplosiveBarrel(-6, 0, -18);
+    this.addExplosiveBarrel(14, 0, -4);
+    this.addExplosiveBarrel(-16, 0, 16);
+    this.addExplosiveBarrel(18, 0, 18);
 
     // Fluorescent Lights hanging from ceiling with flicker
     const lightPositions = [
@@ -428,6 +458,12 @@ export class MapManager {
     addJumpPad(-14, 14, 18);
     addJumpPad(14, 14, 18);
 
+    // Explosive Hazard Barrels near arena barriers
+    this.addExplosiveBarrel(-10, 0, -10);
+    this.addExplosiveBarrel(10, 0, 10);
+    this.addExplosiveBarrel(-18, 0, 6);
+    this.addExplosiveBarrel(18, 0, -6);
+
     // Spawns
     this.playerSpawns = [
       new THREE.Vector3(0, 1.2, -26),
@@ -555,6 +591,13 @@ export class MapManager {
     };
     addJumpPad(-28, -28);
     addJumpPad(28, 28);
+
+    // Explosive Shipping Barrels
+    this.addExplosiveBarrel(-12, 0, -6);
+    this.addExplosiveBarrel(12, 0, -6);
+    this.addExplosiveBarrel(-8, 0, 18);
+    this.addExplosiveBarrel(8, 0, 18);
+    this.addExplosiveBarrel(0, 4.4, -6); // On catwalk!
 
     // Spawns
     this.playerSpawns = [

@@ -11,22 +11,22 @@ export const WEAPONS = {
     name: 'Rival AR-15',
     category: 'primary',
     type: 'Assault Rifle',
-    damage: 24,
-    headshotMultiplier: 2.0,
-    fireRate: 600, // RPM
-    fireInterval: 60 / 600, // seconds
-    spread: 0.015,
-    recoilY: 0.02,
-    recoilX: 0.008,
-    magSize: 30,
-    reserveAmmo: 120,
-    reloadTime: 1.8,
+    damage: 45, // High damage - eliminates bots in 1 headshot or 1-2 body shots!
+    headshotMultiplier: 2.5,
+    fireRate: 650, // RPM
+    fireInterval: 60 / 650, // seconds
+    spread: 0.002, // Near zero spread - pinpoint laser accuracy
+    recoilY: 0.003, // Minimal recoil
+    recoilX: 0.001,
+    magSize: 60, // Doubled mag capacity
+    reserveAmmo: 360,
+    reloadTime: 0.8, // Fast reload
     costKeys: 0, // Starter weapon
     automatic: true,
     adsZoom: 1.35,
     adsPosition: new THREE.Vector3(0, -0.16, -0.32),
     hipPosition: new THREE.Vector3(0.22, -0.22, -0.42),
-    stats: { damage: 65, firerate: 75, accuracy: 78, mag: 70 }
+    stats: { damage: 85, firerate: 85, accuracy: 98, mag: 95 }
   },
 
   shotgun: {
@@ -34,23 +34,23 @@ export const WEAPONS = {
     name: 'Pump Shotgun',
     category: 'primary',
     type: 'Scatter Shotgun',
-    damage: 13, // 8 pellets = 104 body dmg at close range!
+    damage: 28, // 8 pellets = 224 damage - absolute obliteration
     pellets: 8,
-    headshotMultiplier: 1.8,
-    fireRate: 80,
-    fireInterval: 60 / 80,
-    spread: 0.055,
-    recoilY: 0.06,
-    recoilX: 0.02,
-    magSize: 6,
-    reserveAmmo: 36,
-    reloadTime: 2.4,
+    headshotMultiplier: 2.0,
+    fireRate: 110,
+    fireInterval: 60 / 110,
+    spread: 0.025,
+    recoilY: 0.015,
+    recoilX: 0.005,
+    magSize: 12,
+    reserveAmmo: 96,
+    reloadTime: 0.9,
     costKeys: 5,
     automatic: false,
     adsZoom: 1.25,
     adsPosition: new THREE.Vector3(0, -0.15, -0.3),
     hipPosition: new THREE.Vector3(0.22, -0.22, -0.42),
-    stats: { damage: 92, firerate: 25, accuracy: 40, mag: 20 }
+    stats: { damage: 100, firerate: 45, accuracy: 70, mag: 60 }
   },
 
   sniper: {
@@ -58,22 +58,22 @@ export const WEAPONS = {
     name: 'Viper Sniper',
     category: 'primary',
     type: 'Bolt-Action Sniper',
-    damage: 110, // 220 on headshot = instant kill!
-    headshotMultiplier: 2.2,
-    fireRate: 45,
-    fireInterval: 60 / 45,
-    spread: 0.002,
-    recoilY: 0.09,
-    recoilX: 0.02,
-    magSize: 5,
-    reserveAmmo: 25,
-    reloadTime: 2.6,
+    damage: 250, // Instant 1-shot obliteration anywhere!
+    headshotMultiplier: 3.0,
+    fireRate: 60,
+    fireInterval: 60 / 60,
+    spread: 0.0,
+    recoilY: 0.02,
+    recoilX: 0.005,
+    magSize: 10,
+    reserveAmmo: 60,
+    reloadTime: 1.0,
     costKeys: 10,
     automatic: false,
     adsZoom: 3.5, // High zoom with scope overlay
     adsPosition: new THREE.Vector3(0, -0.14, -0.25),
     hipPosition: new THREE.Vector3(0.22, -0.22, -0.44),
-    stats: { damage: 98, firerate: 15, accuracy: 98, mag: 15 }
+    stats: { damage: 100, firerate: 30, accuracy: 100, mag: 40 }
   },
 
   smg: {
@@ -81,22 +81,22 @@ export const WEAPONS = {
     name: 'Dual Micro-SMGs',
     category: 'primary',
     type: 'Submachine Gun',
-    damage: 16,
-    headshotMultiplier: 1.8,
-    fireRate: 950,
-    fireInterval: 60 / 950,
-    spread: 0.035,
-    recoilY: 0.016,
-    recoilX: 0.012,
-    magSize: 40,
-    reserveAmmo: 160,
-    reloadTime: 1.5,
+    damage: 32,
+    headshotMultiplier: 2.0,
+    fireRate: 1050,
+    fireInterval: 60 / 1050,
+    spread: 0.008,
+    recoilY: 0.004,
+    recoilX: 0.002,
+    magSize: 80,
+    reserveAmmo: 400,
+    reloadTime: 0.7,
     costKeys: 12,
     automatic: true,
     adsZoom: 1.2,
     adsPosition: new THREE.Vector3(0, -0.16, -0.3),
     hipPosition: new THREE.Vector3(0.2, -0.2, -0.38),
-    stats: { damage: 45, firerate: 95, accuracy: 60, mag: 85 }
+    stats: { damage: 70, firerate: 100, accuracy: 85, mag: 100 }
   },
 
   pistol: {
@@ -104,22 +104,22 @@ export const WEAPONS = {
     name: 'Combat Pistol',
     category: 'secondary',
     type: 'Sidearm Pistol',
-    damage: 34,
-    headshotMultiplier: 2.0,
-    fireRate: 420,
-    fireInterval: 60 / 420,
-    spread: 0.012,
-    recoilY: 0.03,
-    recoilX: 0.008,
-    magSize: 12,
-    reserveAmmo: 60,
-    reloadTime: 1.2,
+    damage: 55, // 1-2 shot kill
+    headshotMultiplier: 2.2,
+    fireRate: 480,
+    fireInterval: 60 / 480,
+    spread: 0.002,
+    recoilY: 0.006,
+    recoilX: 0.002,
+    magSize: 24,
+    reserveAmmo: 180,
+    reloadTime: 0.6,
     costKeys: 0, // Starter secondary
     automatic: false,
     adsZoom: 1.2,
     adsPosition: new THREE.Vector3(0, -0.14, -0.28),
     hipPosition: new THREE.Vector3(0.18, -0.2, -0.36),
-    stats: { damage: 50, firerate: 60, accuracy: 82, mag: 40 }
+    stats: { damage: 75, firerate: 75, accuracy: 96, mag: 70 }
   },
 
   revolver: {
@@ -127,22 +127,22 @@ export const WEAPONS = {
     name: 'Rival Revolver',
     category: 'secondary',
     type: 'Heavy Revolver',
-    damage: 65,
-    headshotMultiplier: 2.2,
-    fireRate: 150,
-    fireInterval: 60 / 150,
-    spread: 0.008,
-    recoilY: 0.07,
-    recoilX: 0.015,
-    magSize: 6,
-    reserveAmmo: 36,
-    reloadTime: 2.0,
+    damage: 110, // Instant 1-shot kill!
+    headshotMultiplier: 2.5,
+    fireRate: 200,
+    fireInterval: 60 / 200,
+    spread: 0.001,
+    recoilY: 0.015,
+    recoilX: 0.004,
+    magSize: 12,
+    reserveAmmo: 96,
+    reloadTime: 0.9,
     costKeys: 8,
     automatic: false,
     adsZoom: 1.3,
     adsPosition: new THREE.Vector3(0, -0.14, -0.28),
     hipPosition: new THREE.Vector3(0.18, -0.2, -0.36),
-    stats: { damage: 85, firerate: 30, accuracy: 90, mag: 20 }
+    stats: { damage: 98, firerate: 45, accuracy: 98, mag: 50 }
   },
 
   knife: {
@@ -150,10 +150,10 @@ export const WEAPONS = {
     name: 'Tactical Knife',
     category: 'melee',
     type: 'Combat Knife',
-    damage: 75,
+    damage: 150, // 1-hit kill
     headshotMultiplier: 1.5,
-    fireRate: 120,
-    fireInterval: 60 / 120,
+    fireRate: 150,
+    fireInterval: 60 / 150,
     spread: 0.0,
     recoilY: 0.0,
     recoilX: 0.0,
@@ -165,7 +165,78 @@ export const WEAPONS = {
     adsZoom: 1.0,
     adsPosition: new THREE.Vector3(0.1, -0.18, -0.32),
     hipPosition: new THREE.Vector3(0.18, -0.22, -0.32),
-    stats: { damage: 75, firerate: 65, accuracy: 100, mag: 100 }
+    stats: { damage: 95, firerate: 80, accuracy: 100, mag: 100 }
+  },
+
+  rpg: {
+    id: 'rpg',
+    name: 'Rival RPG-7',
+    category: 'primary',
+    type: 'Rocket Launcher',
+    damage: 350, // Massive direct damage + huge explosion
+    headshotMultiplier: 1.5,
+    fireRate: 85,
+    fireInterval: 60 / 85,
+    spread: 0.0,
+    recoilY: 0.04,
+    recoilX: 0.01,
+    isProjectile: true,
+    blastRadius: 9.0,
+    magSize: 4,
+    reserveAmmo: 36,
+    reloadTime: 1.0,
+    costKeys: 5,
+    automatic: false,
+    adsZoom: 1.25,
+    adsPosition: new THREE.Vector3(0, -0.15, -0.32),
+    hipPosition: new THREE.Vector3(0.22, -0.22, -0.42),
+    stats: { damage: 100, firerate: 35, accuracy: 95, mag: 25 }
+  },
+
+  minigun: {
+    id: 'minigun',
+    name: 'Apex Minigun',
+    category: 'primary',
+    type: 'Heavy Rotary Cannon',
+    damage: 38,
+    headshotMultiplier: 2.0,
+    fireRate: 1400,
+    fireInterval: 60 / 1400,
+    spread: 0.006,
+    recoilY: 0.002,
+    recoilX: 0.002,
+    magSize: 200,
+    reserveAmmo: 1000,
+    reloadTime: 1.5,
+    costKeys: 8,
+    automatic: true,
+    adsZoom: 1.15,
+    adsPosition: new THREE.Vector3(0, -0.18, -0.32),
+    hipPosition: new THREE.Vector3(0.2, -0.25, -0.42),
+    stats: { damage: 95, firerate: 100, accuracy: 80, mag: 100 }
+  },
+
+  laser: {
+    id: 'laser',
+    name: 'Hyper Laser Beam',
+    category: 'primary',
+    type: 'Energy Plasma Beam',
+    damage: 65,
+    headshotMultiplier: 2.2,
+    fireRate: 750,
+    fireInterval: 60 / 750,
+    spread: 0.0,
+    recoilY: 0.001,
+    recoilX: 0.001,
+    magSize: 100,
+    reserveAmmo: 600,
+    reloadTime: 0.8,
+    costKeys: 10,
+    automatic: true,
+    adsZoom: 1.3,
+    adsPosition: new THREE.Vector3(0, -0.15, -0.3),
+    hipPosition: new THREE.Vector3(0.2, -0.2, -0.38),
+    stats: { damage: 95, firerate: 90, accuracy: 100, mag: 95 }
   },
 
   katana: {
@@ -173,10 +244,10 @@ export const WEAPONS = {
     name: 'Neon Katana',
     category: 'melee',
     type: 'High-Frequency Katana',
-    damage: 120,
-    headshotMultiplier: 1.5,
-    fireRate: 90,
-    fireInterval: 60 / 90,
+    damage: 250, // 1-hit slash kill
+    headshotMultiplier: 2.0,
+    fireRate: 120,
+    fireInterval: 60 / 120,
     spread: 0.0,
     recoilY: 0.0,
     recoilX: 0.0,
@@ -188,7 +259,7 @@ export const WEAPONS = {
     adsZoom: 1.0,
     adsPosition: new THREE.Vector3(0.1, -0.18, -0.35),
     hipPosition: new THREE.Vector3(0.18, -0.22, -0.35),
-    stats: { damage: 95, firerate: 50, accuracy: 100, mag: 100 }
+    stats: { damage: 100, firerate: 75, accuracy: 100, mag: 100 }
   }
 };
 
@@ -426,6 +497,106 @@ export function createWeaponModel(weaponId, skinId = 'default_matte') {
       const handle = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.04, 0.14), defaultMat);
       handle.position.set(0, 0, 0.09);
       group.add(handle);
+      break;
+    }
+
+    case 'rpg': {
+      // Launcher Body Tube
+      const tube = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.7, 16), defaultMat);
+      tube.rotation.x = Math.PI / 2;
+      tube.position.set(0, 0, -0.1);
+      group.add(tube);
+
+      // Rear Exhaust Venturi Cone
+      const exhaust = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.038, 0.16, 16), defaultMat);
+      exhaust.rotation.x = Math.PI / 2;
+      exhaust.position.set(0, 0, 0.32);
+      group.add(exhaust);
+
+      // Rocket Warhead (Loaded at front tip - Accent)
+      const warhead = new THREE.Mesh(new THREE.ConeGeometry(0.065, 0.22, 16), defaultMat);
+      warhead.name = 'accent_warhead';
+      warhead.rotation.x = -Math.PI / 2;
+      warhead.position.set(0, 0, -0.55);
+      group.add(warhead);
+
+      // Optical PGO-7 Sight (Glow)
+      const sight = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.08, 0.14), defaultMat);
+      sight.name = 'glow_sight';
+      sight.position.set(-0.06, 0.07, -0.15);
+      group.add(sight);
+
+      // Wooden heat guard & Grip
+      const woodGuard = new THREE.Mesh(new THREE.CylinderGeometry(0.046, 0.046, 0.22, 16), defaultMat);
+      woodGuard.rotation.x = Math.PI / 2;
+      woodGuard.position.set(0, 0, 0.05);
+      group.add(woodGuard);
+
+      const grip = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.14, 0.06), defaultMat);
+      grip.position.set(0, -0.1, -0.12);
+      grip.rotation.x = -0.3;
+      group.add(grip);
+      break;
+    }
+
+    case 'minigun': {
+      // Main Heavy Motor Housing
+      const motor = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.32, 16), defaultMat);
+      motor.rotation.x = Math.PI / 2;
+      motor.position.set(0, -0.02, 0.05);
+      group.add(motor);
+
+      // 6 Rotating Gatling Barrels
+      const barrelGroup = new THREE.Group();
+      barrelGroup.name = 'accent_barrels';
+      for (let i = 0; i < 6; i++) {
+        const angle = (i / 6) * Math.PI * 2;
+        const b = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.52, 8), defaultMat);
+        b.rotation.x = Math.PI / 2;
+        b.position.set(Math.cos(angle) * 0.055, Math.sin(angle) * 0.055, -0.36);
+        barrelGroup.add(b);
+      }
+      group.add(barrelGroup);
+
+      // Top Carry Handle
+      const handle = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.1, 0.28), defaultMat);
+      handle.position.set(0, 0.11, -0.02);
+      group.add(handle);
+
+      // Rear Grip / Trigger
+      const rearGrip = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.14, 0.06), defaultMat);
+      rearGrip.position.set(0, -0.08, 0.22);
+      group.add(rearGrip);
+      break;
+    }
+
+    case 'laser': {
+      // Sleek Cyber Frame
+      const frame = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.09, 0.45), defaultMat);
+      group.add(frame);
+
+      // Energy Plasma Battery (Glow)
+      const battery = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.2, 16), defaultMat);
+      battery.name = 'glow_battery';
+      battery.rotation.x = Math.PI / 2;
+      battery.position.set(0, 0.02, -0.02);
+      group.add(battery);
+
+      // Dual Energy Prongs
+      const prong1 = new THREE.Mesh(new THREE.BoxGeometry(0.015, 0.03, 0.25), defaultMat);
+      prong1.name = 'accent_prong';
+      prong1.position.set(0.04, 0.01, -0.32);
+      const prong2 = new THREE.Mesh(new THREE.BoxGeometry(0.015, 0.03, 0.25), defaultMat);
+      prong2.name = 'accent_prong';
+      prong2.position.set(-0.04, 0.01, -0.32);
+      group.add(prong1);
+      group.add(prong2);
+
+      // Ergonomic Futuristic Grip
+      const grip = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.14, 0.07), defaultMat);
+      grip.position.set(0, -0.1, 0.12);
+      grip.rotation.x = -0.4;
+      group.add(grip);
       break;
     }
 

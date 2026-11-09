@@ -102,6 +102,75 @@ class SoundEngine {
         break;
       }
 
+      case 'rpg': {
+        // Heavy rocket backblast whoosh + concussive thump
+        const osc = this.ctx.createOscillator();
+        const oscGain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(120, t);
+        osc.frequency.exponentialRampToValueAtTime(30, t + 0.35);
+        oscGain.gain.setValueAtTime(0.8, t);
+        oscGain.gain.exponentialRampToValueAtTime(0.01, t + 0.35);
+
+        osc.connect(oscGain);
+        oscGain.connect(this.sfxGain);
+        osc.start(t);
+        osc.stop(t + 0.35);
+
+        // Rocket exhaust whoosh
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = this.createNoiseBuffer(0.5);
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(600, t);
+        filter.frequency.linearRampToValueAtTime(1400, t + 0.4);
+
+        const noiseGain = this.ctx.createGain();
+        noiseGain.gain.setValueAtTime(0.9, t);
+        noiseGain.gain.exponentialRampToValueAtTime(0.01, t + 0.5);
+
+        noise.connect(filter);
+        filter.connect(noiseGain);
+        noiseGain.connect(this.sfxGain);
+        noise.start(t);
+        noise.stop(t + 0.5);
+        break;
+      }
+
+      case 'laser': {
+        // Sci-fi high-energy laser pulse
+        const osc = this.ctx.createOscillator();
+        const oscGain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1200, t);
+        osc.frequency.exponentialRampToValueAtTime(200, t + 0.1);
+        oscGain.gain.setValueAtTime(0.4, t);
+        oscGain.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
+
+        osc.connect(oscGain);
+        oscGain.connect(this.sfxGain);
+        osc.start(t);
+        osc.stop(t + 0.1);
+        break;
+      }
+
+      case 'minigun': {
+        // Rapid heavy rotary thumps
+        const osc = this.ctx.createOscillator();
+        const oscGain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(160, t);
+        osc.frequency.exponentialRampToValueAtTime(50, t + 0.05);
+        oscGain.gain.setValueAtTime(0.5, t);
+        oscGain.gain.exponentialRampToValueAtTime(0.01, t + 0.05);
+
+        osc.connect(oscGain);
+        oscGain.connect(this.sfxGain);
+        osc.start(t);
+        osc.stop(t + 0.05);
+        break;
+      }
+
       case 'sniper': {
         // Massive concussive explosion + crack
         const osc = this.ctx.createOscillator();
@@ -251,6 +320,70 @@ class SoundEngine {
         break;
       }
     }
+  }
+
+  // --- EXPLOSIONS & HEAVY SOUNDS ---
+
+  playExplosion() {
+    if (!this.initialized) this.init();
+    this.resume();
+    if (!this.ctx) return;
+
+    const t = this.ctx.currentTime;
+
+    // Massive sub-bass boom (150Hz -> 20Hz)
+    const sub = this.ctx.createOscillator();
+    const subGain = this.ctx.createGain();
+    sub.type = 'sine';
+    sub.frequency.setValueAtTime(150, t);
+    sub.frequency.exponentialRampToValueAtTime(20, t + 0.8);
+
+    subGain.gain.setValueAtTime(1.2, t);
+    subGain.gain.exponentialRampToValueAtTime(0.001, t + 0.8);
+
+    sub.connect(subGain);
+    subGain.connect(this.sfxGain);
+    sub.start(t);
+    sub.stop(t + 0.8);
+
+    // Blast noise & shrapnel debris
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = this.createNoiseBuffer(0.9);
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(1800, t);
+    filter.frequency.exponentialRampToValueAtTime(120, t + 0.9);
+
+    const noiseGain = this.ctx.createGain();
+    noiseGain.gain.setValueAtTime(1.0, t);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, t + 0.9);
+
+    noise.connect(filter);
+    filter.connect(noiseGain);
+    noiseGain.connect(this.sfxGain);
+    noise.start(t);
+    noise.stop(t + 0.9);
+  }
+
+  playGrenadeBounce() {
+    if (!this.initialized) this.init();
+    this.resume();
+    if (!this.ctx) return;
+
+    const t = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(650, t);
+    osc.frequency.exponentialRampToValueAtTime(300, t + 0.08);
+
+    gain.gain.setValueAtTime(0.4, t);
+    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.08);
+
+    osc.connect(gain);
+    gain.connect(this.sfxGain);
+    osc.start(t);
+    osc.stop(t + 0.08);
   }
 
   // --- HITMARKER & COMBAT SOUNDS ---

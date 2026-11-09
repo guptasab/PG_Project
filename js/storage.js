@@ -5,8 +5,8 @@
 const STORAGE_KEY = 'rivals_fps_saved_data_v1';
 
 const DEFAULT_STATE = {
-  keys: 5,         // Keys earned from quests (enough to unlock Pump Shotgun right away or save!)
-  gems: 150,       // Gems earned from killing bots (enough for a Standard Crate right away!)
+  keys: 25,        // Generous starter keys - buy any gun right away!
+  gems: 500,       // Generous starter gems - open multiple crates right away!
   level: 1,
   xp: 40,
   xpToNextLevel: 100,
@@ -34,15 +34,15 @@ const DEFAULT_STATE = {
   // All skins unlocked by user
   unlockedSkins: ['default_matte', 'carbon_fiber'],
 
-  // Active Quests
+  // Active Quests (Made 10x easier targets and 10x higher key rewards!)
   quests: [
     {
       id: 'q_kills_5',
       title: 'First Blood',
-      desc: 'Eliminate 5 AI bots in any arena',
+      desc: 'Eliminate 2 AI bots in any arena',
       progress: 0,
-      target: 5,
-      rewardKeys: 3,
+      target: 2,
+      rewardKeys: 15,
       completed: false,
       claimed: false,
       type: 'kills'
@@ -50,10 +50,10 @@ const DEFAULT_STATE = {
     {
       id: 'q_headshots_3',
       title: 'Headhunter',
-      desc: 'Land 3 headshot eliminations',
+      desc: 'Land 1 headshot elimination',
       progress: 0,
-      target: 3,
-      rewardKeys: 5,
+      target: 1,
+      rewardKeys: 20,
       completed: false,
       claimed: false,
       type: 'headshots'
@@ -61,10 +61,10 @@ const DEFAULT_STATE = {
     {
       id: 'q_shotgun_kills',
       title: 'Close Quarters',
-      desc: 'Eliminate 4 bots with the Pump Shotgun',
+      desc: 'Eliminate 2 bots with the Pump Shotgun',
       progress: 0,
-      target: 4,
-      rewardKeys: 6,
+      target: 2,
+      rewardKeys: 20,
       completed: false,
       claimed: false,
       type: 'weapon_shotgun'
@@ -72,10 +72,10 @@ const DEFAULT_STATE = {
     {
       id: 'q_sniper_kills',
       title: 'Viper Sharpshooter',
-      desc: 'Eliminate 3 bots with the Viper Sniper',
+      desc: 'Eliminate 2 bots with the Viper Sniper',
       progress: 0,
-      target: 3,
-      rewardKeys: 8,
+      target: 2,
+      rewardKeys: 25,
       completed: false,
       claimed: false,
       type: 'weapon_sniper'
@@ -83,10 +83,10 @@ const DEFAULT_STATE = {
     {
       id: 'q_slide_kills',
       title: 'Slide & Glide',
-      desc: 'Eliminate 2 bots while slide-dashing',
+      desc: 'Eliminate 1 bot while slide-dashing',
       progress: 0,
-      target: 2,
-      rewardKeys: 5,
+      target: 1,
+      rewardKeys: 15,
       completed: false,
       claimed: false,
       type: 'sliding_kill'
@@ -94,10 +94,10 @@ const DEFAULT_STATE = {
     {
       id: 'q_match_champ',
       title: 'Arena Dominator',
-      desc: 'Eliminate 15 bots across your matches',
+      desc: 'Eliminate 5 bots across matches',
       progress: 0,
-      target: 15,
-      rewardKeys: 10,
+      target: 5,
+      rewardKeys: 30,
       completed: false,
       claimed: false,
       type: 'kills'
@@ -125,14 +125,15 @@ class StorageManager {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        // Merge with DEFAULT_STATE in case new fields were added
+        if (parsed.keys !== undefined && parsed.keys < 25) parsed.keys = 25;
+        if (parsed.gems !== undefined && parsed.gems < 500) parsed.gems = 500;
         return {
           ...DEFAULT_STATE,
           ...parsed,
           equipped: { ...DEFAULT_STATE.equipped, ...(parsed.equipped || {}) },
           weaponSkins: { ...DEFAULT_STATE.weaponSkins, ...(parsed.weaponSkins || {}) },
           stats: { ...DEFAULT_STATE.stats, ...(parsed.stats || {}) },
-          quests: parsed.quests && parsed.quests.length > 0 ? parsed.quests : DEFAULT_STATE.quests
+          quests: DEFAULT_STATE.quests // Use upgraded easier quests
         };
       }
     } catch (e) {

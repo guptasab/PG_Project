@@ -30,12 +30,12 @@ export class PlayerController {
     this.slideSpeed = 16.0;
     this.slideDirection = new THREE.Vector3();
 
-    // Vitals
-    this.maxHealth = 100;
-    this.health = 100;
-    this.maxShield = 50;
-    this.shield = 50;
-    this.shieldRegenDelay = 4.0;
+    // Vitals (10x Easier / Super Armor)
+    this.maxHealth = 500;
+    this.health = 500;
+    this.maxShield = 500;
+    this.shield = 500;
+    this.shieldRegenDelay = 0.5; // Almost immediate shield regen
     this.timeSinceDamage = 10.0;
     this.isDead = false;
 
@@ -61,6 +61,18 @@ export class PlayerController {
     this.viewmodelGroup = new THREE.Group();
     this.camera.add(this.viewmodelGroup);
     this.scene.add(this.camera);
+
+    // Third Person View & Character Model
+    this.isThirdPerson = false;
+    this.thirdPersonGroup = new THREE.Group();
+    this.thirdPersonGroup.visible = false;
+    this.scene.add(this.thirdPersonGroup);
+    this.buildThirdPersonModel();
+
+    // Projectiles & Heavy Ordnance
+    this.activeRockets = [];
+    this.activeGrenades = [];
+    this.grenadeCooldown = 0;
 
     this.swayTarget = new THREE.Vector2();
     this.swayCurrent = new THREE.Vector2();
@@ -110,6 +122,8 @@ export class PlayerController {
       this.trySlide();
     }
     if (k === 'r') this.tryReload();
+    if (k === 'v') this.toggleThirdPerson();
+    if (k === 'g') this.tryThrowGrenade();
     if (k === '1') this.equipSlot(1);
     if (k === '2') this.equipSlot(2);
     if (k === '3') this.equipSlot(3);
@@ -265,11 +279,230 @@ export class PlayerController {
     this.recoilOffset.z = 0.08;
     this.recoilRotation.x = 0.12;
 
-    // Hitscan shooting
-    this.performHitscan();
+    // Projectile vs Hitscan shooting
+    if (this.currentWeaponData.isProjectile) {
+      this.launchRocket();
+    } else {
+      this.performHitscan();
+    }
+
+    // Minigun barrel spin
+    if (this.currentWeaponData.id === 'minigun') {
+      this.spinMinigunBarrels();
+    }
 
     if (this.onShootCallback) {
       this.onShootCallback(this.currentWeaponData);
+    }
+  }
+
+  spinMinigunBarrels() {
+    if (this.currentWeaponModel) {
+      const barrels = this.currentWeaponModel.getObjectByName('accent_barrels');
+      if (barrels) {
+        barrels.rotation.z += 1.2;
+      }
+    }
+  }
+
+  toggleThirdPerson() {
+    this.isThirdPerson = !this.isThirdPerson;
+    this.thirdPersonGroup.visible = this.isThirdPerson;
+    this.viewmodelGroup.visible = !this.isThirdPerson;
+  }
+
+  buildThirdPersonModel() {
+    // Roblox classic blocky player character model
+    const skinMat = new THREE.MeshStandardMaterial({ color: 0xfacc15, roughness: 0.5 });
+    const shirtMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.5 }); // Blue tactical shirt
+    const pantsMat = new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.6 }); // Black pants
+    const helmetMat = new THREE.MeshStandardMaterial({ color: 0xff0055, emissive: 0xff0055, emissiveIntensity: 0.4 });
+
+    const torso = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.9, 0.45), shirtMat);
+    torso.position.y = 1.05;
+    this.thirdPersonGroup.add(torso);
+
+    const head = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.55, 0.55), skinMat);
+    head.position.y = 1.78;
+    this.thirdPersonGroup.add(head);
+
+    // Glowing Visor
+    const visor = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.16, 0.08), helmetMat);
+    visor.position.set(0, 0.02, -0.28);
+    head.add(visor);
+
+    const armGeom = new THREE.BoxGeometry(0.32, 0.85, 0.32);
+    this.tpLeftArm = new THREE.Mesh(armGeom, shirtMat);
+    this.tpLeftArm.position.set(-0.6, 1.0, 0);
+    this.thirdPersonGroup.add(this.tpLeftArm);
+
+    this.tpRightArm = new THREE.Mesh(armGeom, shirtMat);
+    this.tpRightArm.position.set(0.6, 1.0, 0);
+    this.thirdPersonGroup.add(this.tpRightArm);
+
+    const legGeom = new THREE.BoxGeometry(0.36, 0.9, 0.36);
+    this.tpLeftLeg = new THREE.Mesh(legGeom, pantsMat);
+    this.tpLeftLeg.position.set(-0.22, 0.45, 0);
+    this.thirdPersonGroup.add(this.tpLeftLeg);
+
+    this.tpRightLeg = new THREE.Mesh(legGeom, pantsMat);
+    this.tpRightLeg.position.set(0.22, 0.45, 0);
+    this.thirdPersonGroup.add(this.tpRightLeg);
+  }
+
+  launchRocket() {
+    // Camera aim direction
+    const forward = new THREE.Vector3(0, 0, -1).applyEuler(new THREE.Euler(this.pitch, this.yaw, 0, 'YXZ'));
+    const startPos = this.position.clone().add(new THREE.Vector3(0, -0.1, 0)).addScaledVector(forward, 0.8);
+
+    const rocketGroup = new THREE.Group();
+
+    // Cylindrical rocket body
+    const body = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.065, 0.065, 0.4, 12),
+      new THREE.MeshStandardMaterial({ color: 0x4d7c0f, roughness: 0.3 })
+    );
+    body.rotation.x = Math.PI / 2;
+    rocketGroup.add(body);
+
+    // Conical explosive warhead
+    const warhead = new THREE.Mesh(
+      new THREE.ConeGeometry(0.1, 0.22, 12),
+      new THREE.MeshStandardMaterial({ color: 0xb91c1c, emissive: 0xff2200, emissiveIntensity: 0.4 })
+    );
+    warhead.rotation.x = -Math.PI / 2;
+    warhead.position.z = -0.28;
+    rocketGroup.add(warhead);
+
+    // Rocket exhaust flame light
+    const exhaustLight = new THREE.PointLight(0xff6600, 2.5, 8);
+    exhaustLight.position.z = 0.25;
+    rocketGroup.add(exhaustLight);
+
+    rocketGroup.position.copy(startPos);
+    rocketGroup.lookAt(startPos.clone().add(forward));
+    this.scene.add(rocketGroup);
+
+    this.activeRockets.push({
+      mesh: rocketGroup,
+      velocity: forward.clone().multiplyScalar(46),
+      lifetime: 3.5,
+      prevPos: startPos.clone()
+    });
+  }
+
+  tryThrowGrenade() {
+    if (this.grenadeCooldown > 0) return;
+    this.grenadeCooldown = 1.6;
+
+    sound.playGrenadeBounce();
+
+    const forward = new THREE.Vector3(0, 0, -1).applyEuler(new THREE.Euler(this.pitch, this.yaw, 0, 'YXZ'));
+    const startPos = this.position.clone().add(new THREE.Vector3(0, 0.2, 0)).addScaledVector(forward, 0.6);
+
+    const grenadeMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(0.12, 12, 12),
+      new THREE.MeshStandardMaterial({ color: 0x166534, emissive: 0xef4444, emissiveIntensity: 0.8 })
+    );
+    grenadeMesh.position.copy(startPos);
+    this.scene.add(grenadeMesh);
+
+    const throwVel = forward.clone().multiplyScalar(22).add(new THREE.Vector3(0, 7, 0));
+
+    this.activeGrenades.push({
+      mesh: grenadeMesh,
+      velocity: throwVel,
+      timer: 1.4 // Explodes after 1.4s
+    });
+  }
+
+  detonateExplosion(pos, blastRadius = 9.0, maxDamage = 350) {
+    sound.playExplosion();
+
+    // 1. Huge expanding fireball sphere
+    const fireGeom = new THREE.SphereGeometry(1, 16, 16);
+    const fireMat = new THREE.MeshBasicMaterial({ color: 0xff3b00, transparent: true, opacity: 0.95 });
+    const fireball = new THREE.Mesh(fireGeom, fireMat);
+    fireball.position.copy(pos);
+    this.scene.add(fireball);
+
+    // Shockwave ring
+    const ringGeom = new THREE.RingGeometry(0.5, 1.4, 24);
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0xffe600, side: THREE.DoubleSide, transparent: true, opacity: 0.9 });
+    const ring = new THREE.Mesh(ringGeom, ringMat);
+    ring.rotation.x = -Math.PI / 2;
+    ring.position.copy(pos).add(new THREE.Vector3(0, 0.15, 0));
+    this.scene.add(ring);
+
+    // Dynamic explosion point light
+    const blastLight = new THREE.PointLight(0xff6600, 8, 26);
+    blastLight.position.copy(pos);
+    this.scene.add(blastLight);
+
+    let elapsed = 0;
+    const anim = setInterval(() => {
+      elapsed += 0.035;
+      const s = 1 + elapsed * 16;
+      fireball.scale.set(s, s, s);
+      fireMat.opacity = Math.max(0, 1 - elapsed * 2.2);
+
+      const rs = 1 + elapsed * 22;
+      ring.scale.set(rs, rs, rs);
+      ringMat.opacity = Math.max(0, 1 - elapsed * 2.5);
+
+      if (elapsed >= 0.45) {
+        clearInterval(anim);
+        this.scene.remove(fireball);
+        this.scene.remove(ring);
+        this.scene.remove(blastLight);
+        fireGeom.dispose();
+        fireMat.dispose();
+        ringGeom.dispose();
+        ringMat.dispose();
+      }
+    }, 30);
+
+    // 2. AOE blast damage to all bots in radius!
+    const targetBots = [];
+    this.scene.traverse((obj) => {
+      if (obj.isMesh && obj.userData && obj.userData.isBot && obj.userData.part === 'body' && obj.parent && obj.parent.visible) {
+        const bot = obj.userData.botInstance;
+        if (bot && !bot.isDead && !targetBots.includes(bot)) {
+          targetBots.push(bot);
+        }
+      }
+    });
+
+    for (const bot of targetBots) {
+      const dist = bot.group.position.distanceTo(pos);
+      if (dist <= blastRadius) {
+        const falloff = 1 - (dist / blastRadius);
+        const dmg = Math.floor(maxDamage * Math.max(0.5, falloff));
+        sound.playHitmarker(true);
+        const killed = bot.takeDamage(dmg, true);
+        if (this.onHitCallback) {
+          this.onHitCallback({
+            hitPoint: bot.group.position.clone().add(new THREE.Vector3(0, 1.2, 0)),
+            damage: dmg,
+            isHeadshot: true,
+            killed,
+            botName: bot.name,
+            weaponId: 'rpg',
+            isSliding: this.isSliding
+          });
+        }
+      }
+    }
+
+    // 3. ROCKET JUMP: If blast is near player's feet, launch player into the air!
+    const distToPlayer = this.position.distanceTo(pos);
+    if (distToPlayer <= 4.5) {
+      this.velocity.y = 21.0; // High aerial propulsion
+      const blastDir = this.position.clone().sub(pos).normalize();
+      this.velocity.x += blastDir.x * 12;
+      this.velocity.z += blastDir.z * 12;
+      this.isOnGround = false;
+      sound.playJumpPadLaunch();
     }
   }
 
@@ -288,10 +521,10 @@ export class PlayerController {
       const screenCenter = new THREE.Vector2(spreadX, spreadY);
       raycaster.setFromCamera(screenCenter, this.camera);
 
-      // Collect target objects: map colliders and bot meshes
+      // Collect target objects: map colliders, bot meshes and explosive barrels
       const targetMeshes = [];
       this.scene.traverse((obj) => {
-        if (obj.isMesh && obj.userData && obj.userData.isBot && obj.parent && obj.parent.visible) {
+        if (obj.isMesh && obj.userData && (obj.userData.isBot || obj.userData.isBarrel) && obj.parent && obj.parent.visible) {
           targetMeshes.push(obj);
         }
       });
@@ -300,6 +533,18 @@ export class PlayerController {
 
       if (intersects.length > 0) {
         const hit = intersects[0];
+
+        // Check if explosive barrel was shot!
+        if (hit.object.userData.isBarrel) {
+          const barrelGrp = hit.object.userData.barrelGroup;
+          if (barrelGrp && barrelGrp.parent) {
+            const bPos = barrelGrp.position.clone().add(new THREE.Vector3(0, 0.8, 0));
+            barrelGrp.parent.remove(barrelGrp);
+            this.detonateExplosion(bPos, 9.5, 350);
+          }
+          return;
+        }
+
         const bot = hit.object.userData.botInstance;
         const isHeadshot = hit.object.userData.part === 'head';
 
@@ -338,13 +583,16 @@ export class PlayerController {
   }
 
   createBulletTracer(start, end) {
+    const isLaser = this.currentWeaponData && this.currentWeaponData.id === 'laser';
+    const isMinigun = this.currentWeaponData && this.currentWeaponData.id === 'minigun';
+
     const points = [start, end];
     const geom = new THREE.BufferGeometry().setFromPoints(points);
     const mat = new THREE.LineBasicMaterial({
-      color: 0xffea00,
-      linewidth: 2,
+      color: isLaser ? 0x00f2fe : (isMinigun ? 0xff6600 : 0xffea00),
+      linewidth: isLaser ? 4 : 2,
       transparent: true,
-      opacity: 0.8
+      opacity: isLaser ? 0.95 : 0.8
     });
     const line = new THREE.Line(geom, mat);
     this.scene.add(line);
@@ -353,7 +601,7 @@ export class PlayerController {
       this.scene.remove(line);
       geom.dispose();
       mat.dispose();
-    }, 50);
+    }, isLaser ? 70 : 50);
   }
 
   createImpactSpark(pos, normal) {
@@ -434,10 +682,10 @@ export class PlayerController {
   }
 
   update(delta) {
-    // Shield regeneration
+    // Shield rapid regeneration
     this.timeSinceDamage += delta;
     if (this.timeSinceDamage >= this.shieldRegenDelay && this.shield < this.maxShield) {
-      this.shield = Math.min(this.maxShield, this.shield + delta * 20);
+      this.shield = Math.min(this.maxShield, this.shield + delta * 150);
       if (this.onDamageTakenCallback) {
         this.onDamageTakenCallback(this.health, this.shield);
       }
@@ -519,8 +767,82 @@ export class PlayerController {
       }
     }
 
-    // Update Camera position & rotation
-    this.camera.position.copy(this.position);
+    // Update Active Rockets
+    for (let i = this.activeRockets.length - 1; i >= 0; i--) {
+      const rocket = this.activeRockets[i];
+      rocket.lifetime -= delta;
+      rocket.mesh.position.addScaledVector(rocket.velocity, delta);
+
+      let exploded = false;
+      if (rocket.mesh.position.y <= 0.2 || rocket.lifetime <= 0) {
+        exploded = true;
+      } else {
+        // Check collision with any bot
+        this.scene.traverse((obj) => {
+          if (!exploded && obj.isMesh && obj.userData && obj.userData.isBot && obj.parent && obj.parent.visible) {
+            const botPos = new THREE.Vector3();
+            obj.getWorldPosition(botPos);
+            if (rocket.mesh.position.distanceTo(botPos) < 1.4) {
+              exploded = true;
+            }
+          }
+        });
+      }
+
+      if (exploded) {
+        this.detonateExplosion(rocket.mesh.position.clone(), 9.0, 350);
+        this.scene.remove(rocket.mesh);
+        this.activeRockets.splice(i, 1);
+      }
+    }
+
+    // Update Active Grenades
+    if (this.grenadeCooldown > 0) this.grenadeCooldown -= delta;
+
+    for (let i = this.activeGrenades.length - 1; i >= 0; i--) {
+      const g = this.activeGrenades[i];
+      g.timer -= delta;
+      g.velocity.y -= 22 * delta; // Gravity
+      g.mesh.position.addScaledVector(g.velocity, delta);
+
+      // Bounce on floor
+      if (g.mesh.position.y <= 0.15) {
+        g.mesh.position.y = 0.15;
+        g.velocity.y = -g.velocity.y * 0.45;
+        g.velocity.x *= 0.7;
+        g.velocity.z *= 0.7;
+        if (Math.abs(g.velocity.y) > 1.2) {
+          sound.playGrenadeBounce();
+        }
+      }
+
+      if (g.timer <= 0) {
+        this.detonateExplosion(g.mesh.position.clone(), 8.0, 300);
+        this.scene.remove(g.mesh);
+        this.activeGrenades.splice(i, 1);
+      }
+    }
+
+    // Update Camera position & rotation (1st Person vs 3rd Person)
+    if (this.isThirdPerson) {
+      this.thirdPersonGroup.position.copy(this.position);
+      this.thirdPersonGroup.rotation.y = this.yaw;
+
+      if (this.isOnGround && (this.keys.w || this.keys.a || this.keys.s || this.keys.d)) {
+        const a = Math.sin(this.bobTimer) * 0.45;
+        this.tpLeftLeg.rotation.x = a;
+        this.tpRightLeg.rotation.x = -a;
+        this.tpLeftArm.rotation.x = -a * 0.6;
+      } else {
+        this.tpLeftLeg.rotation.x = 0;
+        this.tpRightLeg.rotation.x = 0;
+      }
+
+      const offset = new THREE.Vector3(0.5, 0.4, 2.6).applyEuler(new THREE.Euler(this.pitch * 0.6, this.yaw, 0, 'YXZ'));
+      this.camera.position.copy(this.position).add(offset);
+    } else {
+      this.camera.position.copy(this.position);
+    }
     this.camera.rotation.order = 'YXZ';
     this.camera.rotation.y = this.yaw;
     this.camera.rotation.x = this.pitch;

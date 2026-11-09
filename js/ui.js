@@ -208,13 +208,19 @@ export class UIManager {
 
     // Pointer Lock click-to-resume
     this.pointerLockPrompt.addEventListener('click', () => {
-      this.game.domElement.requestPointerLock();
+      try {
+        const p = this.game.domElement.requestPointerLock();
+        if (p && p.catch) p.catch(() => {});
+      } catch (e) {}
     });
 
     // Pause Menu buttons
     document.getElementById('btn-resume-game').addEventListener('click', () => {
       this.closeModal(this.modalPause);
-      this.game.domElement.requestPointerLock();
+      try {
+        const p = this.game.domElement.requestPointerLock();
+        if (p && p.catch) p.catch(() => {});
+      } catch (e) {}
     });
 
     document.getElementById('btn-pause-how-to-play').addEventListener('click', () => {

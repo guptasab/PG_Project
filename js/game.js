@@ -150,8 +150,11 @@ export class GameEngine {
       this.ui.updateHUD(this.player);
     }
 
-    // Request pointer lock
-    this.domElement.requestPointerLock();
+    // Request pointer lock safely
+    try {
+      const p = this.domElement.requestPointerLock();
+      if (p && p.catch) p.catch(() => {});
+    } catch (e) {}
   }
 
   spawnBots(count = 5) {
@@ -178,8 +181,8 @@ export class GameEngine {
     this.streakCount++;
     if (isHeadshot) this.playerHeadshots++;
 
-    // Calculate Gems: 10 base + 5 headshot bonus!
-    const gemAward = isHeadshot ? 15 : 10;
+    // 10x Easier Rewards: 50 base Gems + 50 headshot bonus (100 Gems per headshot!)
+    const gemAward = isHeadshot ? 100 : 50;
     this.gemsEarnedThisMatch += gemAward;
     storage.addGems(gemAward);
 
@@ -202,7 +205,7 @@ export class GameEngine {
 
       // Streak announcements
       if (isHeadshot) {
-        this.ui.showKillAnnouncement('HEADSHOT!', '#fbbf24');
+        this.ui.showKillAnnouncement('CRITICAL HEADSHOT! +100 💎', '#fbbf24');
       } else if (this.streakCount === 3) {
         this.ui.showKillAnnouncement('TRIPLE KILL!', '#00f2fe');
       } else if (this.streakCount === 5) {
@@ -212,16 +215,16 @@ export class GameEngine {
       }
     }
 
-    // Check Win Condition (First to 20 kills)
-    if (this.playerKills >= this.matchKillGoal) {
+    // Check Win Condition (First to 15 kills)
+    if (this.playerKills >= 15) {
       this.endMatch(true);
     }
   }
 
   handleBotFiredBullet(bot, muzzlePos, targetPos) {
-    // Bot tracer line
+    // Bot tracer line (visual only - bots DO NOT target or hurt player!)
     const geom = new THREE.BufferGeometry().setFromPoints([muzzlePos, targetPos]);
-    const mat = new THREE.LineBasicMaterial({ color: 0xff0055, linewidth: 2 });
+    const mat = new THREE.LineBasicMaterial({ color: 0x64748b, linewidth: 1 });
     const line = new THREE.Line(geom, mat);
     this.scene.add(line);
 
@@ -229,32 +232,9 @@ export class GameEngine {
       this.scene.remove(line);
       geom.dispose();
       mat.dispose();
-    }, 45);
+    }, 40);
 
-    // Distance attenuation audio for bot shot
-    const distToPlayer = muzzlePos.distanceTo(this.player.position);
-    if (distToPlayer < 40) {
-      sound.playShootSound('pistol');
-    }
-
-    // Check if shot hits player
-    const distToTarget = targetPos.distanceTo(this.player.position);
-    if (distToTarget < 1.4) {
-      // Hit player!
-      const botDamage = Math.floor(12 + Math.random() * 8);
-      this.player.takeDamage(botDamage, bot.name);
-
-      if (this.player.isDead) {
-        this.playerDeaths++;
-        this.streakCount = 0;
-        this.botTeamKills++;
-        if (this.ui) {
-          this.ui.hudBotScore.textContent = this.botTeamKills;
-          this.ui.addKillFeedEntry(bot.name, 'YOU', 'Rival Gun', false);
-          this.ui.showKillAnnouncement('ELIMINATED', '#ef4444');
-        }
-      }
-    }
+    // Bots do 0 damage to player (peaceful practice targets)
   }
 
   endMatch(isVictory) {

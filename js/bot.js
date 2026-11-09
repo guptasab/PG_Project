@@ -18,24 +18,23 @@ export class Bot {
     this.mapManager = mapManager;
     this.onDeathCallback = onDeathCallback;
 
-    this.maxHealth = 100;
-    this.health = 100;
+    this.maxHealth = 30; // 10x easier: reduced health so bots pop in 1-2 shots
+    this.health = 30;
     this.isDead = false;
     this.respawnTimer = 0;
 
-    // Movement & Combat parameters
-    this.speed = 5.2;
+    // Movement & Combat parameters (Peaceful towards player)
+    this.speed = 3.6; // Gentle, predictable movement
     this.strafeDir = 1;
     this.strafeTimer = 0;
     this.attackCooldown = 0;
-    this.fireRate = 1.0; // Seconds between bot bursts
+    this.fireRate = 2.0;
     this.burstCount = 0;
-    this.visionRange = 38;
-    this.preferredRange = 14;
 
-    this.state = 'patrol'; // 'patrol', 'chase', 'attack'
+    this.state = 'patrol'; // 'patrol' or 'bot_duel' - NEVER TARGETS PLAYER
     this.patrolTarget = new THREE.Vector3();
     this.patrolTimer = 0;
+    this.targetBot = null;
 
     // 3D Model Components
     this.group = new THREE.Group();
@@ -175,22 +174,20 @@ export class Bot {
     this.patrolTimer = 4 + Math.random() * 3;
   }
 
-  takeDamage(amount, isHeadshot = false, playerPos = null) {
+  takeDamage(amount, isHeadshot = false) {
     if (this.isDead) return false;
 
     this.health -= amount;
     this.updateHealthBarTexture();
 
-    // Flash red
+    // Flash white/red
     this.torso.material.color.setHex(0xffffff);
     setTimeout(() => {
       if (this.torso) this.torso.material.color.setHex(0xef4444);
     }, 80);
 
-    // React immediately to shooter position
-    if (playerPos) {
-      this.state = 'attack';
-    }
+    // Bot does NOT target player - it just gets a small impulse and keeps roaming
+    this.patrolTimer = 1.0;
 
     if (this.health <= 0) {
       this.die(isHeadshot);
@@ -203,7 +200,7 @@ export class Bot {
   die(isHeadshot) {
     this.isDead = true;
     this.group.visible = false;
-    this.respawnTimer = 3.5;
+    this.respawnTimer = 1.5; // Fast respawn so player always has targets
 
     if (this.onDeathCallback) {
       this.onDeathCallback(this, isHeadshot);
@@ -222,79 +219,44 @@ export class Bot {
       return;
     }
 
-    const distToPlayer = this.group.position.distanceTo(playerPosition);
-
-    // State Transition
-    if (distToPlayer < this.visionRange) {
-      // Raycast check for line of sight
-      this.state = distToPlayer < this.preferredRange ? 'attack' : 'chase';
-    } else {
-      this.state = 'patrol';
-    }
+    // BOTS NEVER TARGET OR ATTACK THE PLAYER!
+    // They navigate between waypoints and cover calmly
+    this.patrolTimer -= delta;
+    const distToPatrol = this.group.position.distanceTo(this.patrolTarget);
 
     let moveVec = new THREE.Vector3();
     let isMoving = false;
 
-    if (this.state === 'patrol') {
-      this.patrolTimer -= delta;
-      const distToPatrol = this.group.position.distanceTo(this.patrolTarget);
-      if (distToPatrol > 2.0 && this.patrolTimer > 0) {
-        moveVec.subVectors(this.patrolTarget, this.group.position).normalize();
-        this.lookTowards(this.patrolTarget);
-        isMoving = true;
-      } else {
-        this.pickNewPatrolTarget();
-      }
-    } else if (this.state === 'chase') {
-      moveVec.subVectors(playerPosition, this.group.position).normalize();
-      this.lookTowards(playerPosition);
+    if (distToPatrol > 2.0 && this.patrolTimer > 0) {
+      moveVec.subVectors(this.patrolTarget, this.group.position).normalize();
+      this.lookTowards(this.patrolTarget);
       isMoving = true;
-    } else if (this.state === 'attack') {
-      this.lookTowards(playerPosition);
-
-      // Strafe left/right during combat
-      this.strafeTimer -= delta;
-      if (this.strafeTimer <= 0) {
-        this.strafeDir *= -1;
-        this.strafeTimer = 1.0 + Math.random() * 1.5;
-      }
-
-      const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(this.group.quaternion);
-      const right = new THREE.Vector3(1, 0, 0).applyQuaternion(this.group.quaternion);
-
-      // If too close, back up slightly; if too far, advance
-      if (distToPlayer < 7.0) {
-        moveVec.addScaledVector(forward, -0.5);
-      } else if (distToPlayer > 18.0) {
-        moveVec.addScaledVector(forward, 0.6);
-      }
-      moveVec.addScaledVector(right, this.strafeDir * 0.8).normalize();
-      isMoving = true;
-
-      // Bot Shooting
-      this.attackCooldown -= delta;
-      if (this.attackCooldown <= 0) {
-        this.shootAtPlayer(playerPosition, onBotFiredBullet);
-        this.attackCooldown = 0.6 + Math.random() * 0.4; // Burst timing
-      }
+    } else {
+      this.pickNewPatrolTarget();
     }
 
-    // Apply movement & collision avoidance
+    // Occasional harmless bot target practice away into the air or at distant walls (never at player!)
+    this.attackCooldown -= delta;
+    if (this.attackCooldown <= 0) {
+      this.shootPracticeTarget(onBotFiredBullet);
+      this.attackCooldown = 3.0 + Math.random() * 4.0;
+    }
+
+    // Apply movement
     if (isMoving && moveVec.lengthSq() > 0) {
       const step = moveVec.multiplyScalar(this.speed * delta);
       const nextPos = this.group.position.clone().add(step);
 
-      // Basic bounds check
       if (Math.abs(nextPos.x) < 33 && Math.abs(nextPos.z) < 33) {
         this.group.position.copy(nextPos);
       }
 
       // Walk limb animation
-      this.walkCycle += delta * 10;
-      const angle = Math.sin(this.walkCycle) * 0.5;
+      this.walkCycle += delta * 7;
+      const angle = Math.sin(this.walkCycle) * 0.4;
       this.leftLeg.rotation.x = angle;
       this.rightLeg.rotation.x = -angle;
-      this.leftArm.rotation.x = -angle * 0.7;
+      this.leftArm.rotation.x = -angle * 0.5;
     } else {
       this.leftLeg.rotation.x = 0;
       this.rightLeg.rotation.x = 0;
@@ -307,18 +269,14 @@ export class Bot {
     this.group.lookAt(eyeTarget);
   }
 
-  shootAtPlayer(playerPos, onBotFiredBullet) {
+  // Shoots harmlessly into distance or at target waypoints, completely avoiding player
+  shootPracticeTarget(onBotFiredBullet) {
     if (!this.group.visible || this.isDead) return;
 
-    // Slight bot spread so combat feels fair and dynamic
-    const spread = 0.08;
-    const aimTarget = playerPos.clone().add(new THREE.Vector3(
-      (Math.random() - 0.5) * spread * 20,
-      (Math.random() - 0.5) * spread * 10,
-      (Math.random() - 0.5) * spread * 20
-    ));
-
+    // Fire in forward facing direction
+    const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(this.group.quaternion);
     const muzzlePos = this.group.position.clone().add(new THREE.Vector3(0.5, 1.2, -0.6).applyQuaternion(this.group.quaternion));
+    const aimTarget = muzzlePos.clone().addScaledVector(forward, 25);
 
     if (onBotFiredBullet) {
       onBotFiredBullet(this, muzzlePos, aimTarget);

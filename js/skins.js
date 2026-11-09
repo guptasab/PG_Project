@@ -109,6 +109,30 @@ export const SKINS = {
     metalness: 0.8,
     roughness: 0.2,
     desc: 'A swirl of cosmic constellations and twinkling nebulae.'
+  },
+  rgb_gamer: {
+    id: 'rgb_gamer',
+    name: 'Chroma RGB Gamer',
+    rarity: 'legendary',
+    colorHex: '#0f172a',
+    accentHex: '#10b981',
+    emissiveHex: '#00ff88',
+    emissiveIntensity: 1.0,
+    metalness: 0.8,
+    roughness: 0.2,
+    desc: 'Ultra-luminous mechanical RGB lighting that pulses with power.'
+  },
+  quantum_void: {
+    id: 'quantum_void',
+    name: 'Quantum Portal',
+    rarity: 'mythic',
+    colorHex: '#030712',
+    accentHex: '#06b6d4',
+    emissiveHex: '#3b82f6',
+    emissiveIntensity: 1.3,
+    metalness: 0.9,
+    roughness: 0.1,
+    desc: 'Bending space and time with dark matter singularity pulses.'
   }
 };
 
@@ -135,12 +159,12 @@ export const CRATES = {
     pool: {
       rare: ['arctic_camo', 'cyber_neon'],
       epic: ['golden_royale', 'magma_core'],
-      legendary: ['void_walker', 'dragon_fire']
+      legendary: ['void_walker', 'dragon_fire', 'rgb_gamer']
     },
     odds: {
-      rare: 0.45,
+      rare: 0.40,
       epic: 0.40,
-      legendary: 0.15
+      legendary: 0.20
     }
   },
   void: {
@@ -149,13 +173,13 @@ export const CRATES = {
     cost: 500,
     pool: {
       epic: ['golden_royale', 'magma_core'],
-      legendary: ['void_walker', 'dragon_fire'],
-      mythic: ['galaxy_stars']
+      legendary: ['void_walker', 'dragon_fire', 'rgb_gamer'],
+      mythic: ['galaxy_stars', 'quantum_void']
     },
     odds: {
-      epic: 0.45,
+      epic: 0.40,
       legendary: 0.40,
-      mythic: 0.15
+      mythic: 0.20
     }
   }
 };
