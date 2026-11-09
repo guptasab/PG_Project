@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>RIVALS 3D - FPS Shooter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Teko:wght@600;700&family=Rajdhani:wght@600;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- 3D WebGL Canvas Container -->
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+  </div>
+
+  <!-- MAIN MENU SCREEN -->
+  <div id="main-menu" class="menu-screen active">
+    <!-- Background overlay / vignette -->
+    <div class="menu-bg-gradient"></div>
+    <div class="menu-grid-overlay"></div>
+
+    <!-- Header bar with currencies & profile -->
+    <header class="menu-header">
+      <div class="logo-container">
+        <h1 class="game-logo">RIVALS<span class="logo-sub">3D</span></h1>
+        <span class="badge-beta">ARCADE FPS</span>
+      </div>
+
+      <div class="currency-bar">
+        <div class="currency-item keys-badge" title="Keys from Quests - Used to buy Guns">
+          <span class="currency-icon">🔑</span>
+          <span class="currency-amount" id="menu-keys-count">0</span>
+          <span class="currency-label">KEYS</span>
+        </div>
+        <div class="currency-item gems-badge" title="Gems from Kills - Used to buy Crates & Skins">
+          <span class="currency-icon">💎</span>
+          <span class="currency-amount" id="menu-gems-count">0</span>
+          <span class="currency-label">GEMS</span>
+        </div>
+        <div class="player-level-badge">
+          <div class="level-circle" id="menu-level">1</div>
+          <div class="level-info">
+            <span class="level-name">SOLDIER</span>
+            <div class="xp-bar-bg"><div class="xp-bar-fill" id="menu-xp-fill" style="width: 20%;"></div></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Navigation Center -->
+    <main class="menu-main">
+      <div class="menu-buttons">
+        <button id="btn-play" class="rival-btn primary-btn pulse-glow">
+          <span class="btn-icon">⚡</span>
+          <span class="btn-text">PLAY NOW</span>
+          <span class="btn-subtext">ENTER THE COMBAT ZONE</span>
+        </button>
+
+        <button id="btn-loadout" class="rival-btn secondary-btn">
+          <span class="btn-icon">🔫</span>
+          <span class="btn-text">LOADOUT & SHOP</span>
+          <span class="btn-subtext">BUY GUNS (KEYS) & CRATES (GEMS)</span>
+        </button>
+
+        <button id="btn-quests" class="rival-btn quest-btn">
+          <span class="btn-icon">📜</span>
+          <span class="btn-text">QUESTS</span>
+          <span class="btn-subtext">EARN KEYS FOR NEW WEAPONS</span>
+          <span class="notification-dot" id="quest-alert-dot" style="display: none;">!</span>
+        </button>
+
+        <button id="btn-how-to-play" class="rival-btn info-btn">
+          <span class="btn-icon">❓</span>
+          <span class="btn-text">HOW TO PLAY</span>
+          <span class="btn-subtext">CONTROLS, TIPS & MECHANICS</span>
+        </button>
+      </div>
+
+      <!-- Quick Active Loadout Display in Menu -->
+      <div class="menu-active-loadout">
+        <div class="active-weapon-card">
+          <div class="card-label">EQUIPPED PRIMARY</div>
+          <div class="card-weapon-name" id="menu-primary-name">RIVAL AR-15</div>
+          <div class="card-skin-tag" id="menu-primary-skin">DEFAULT MATTE</div>
+        </div>
+        <div class="active-weapon-card">
+          <div class="card-label">EQUIPPED SECONDARY</div>
+          <div class="card-weapon-name" id="menu-secondary-name">COMBAT PISTOL</div>
+          <div class="card-skin-tag" id="menu-secondary-skin">DEFAULT MATTE</div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer info -->
+    <footer class="menu-footer">
+      <span>INSPIRED BY ROBLOX RIVALS &bull; 3D FIRST PERSON SHOOTER &bull; FIGHT AI BOTS</span>
+      <div class="footer-links">
+        <button id="btn-reset-data" class="text-link" title="Reset all progress and currencies">Reset Progress</button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- MAP SELECTION MODAL -->
+  <div id="modal-map-select" class="modal-overlay">
+    <div class="modal-box map-modal-box">
+      <div class="modal-header">
+        <h2 class="modal-title">SELECT BATTLEGROUND</h2>
+        <button class="modal-close-btn" data-close="modal-map-select">&times;</button>
+      </div>
+      <p class="modal-subtitle">Choose your arena to fight against AI bots</p>
+
+      <div class="map-grid">
+        <!-- Backrooms Map -->
+        <div class="map-card" data-map="backrooms">
+          <div class="map-preview backrooms-preview">
+            <div class="map-tag eerie">SURVIVAL MAZE</div>
+          </div>
+          <div class="map-info">
+            <h3 class="map-name">THE BACKROOMS</h3>
+            <p class="map-desc">Endless eerie yellow corridors, buzzing fluorescent lights, tight corners and relentless hostile bots.</p>
+            <div class="map-stats">
+              <span>Difficulty: <strong>Hard</strong></span>
+              <span>Layout: <strong>Labyrinth</strong></span>
+            </div>
+            <button class="rival-btn select-map-btn" data-map="backrooms">DEPLOY HERE</button>
+          </div>
+        </div>
+
+        <!-- Neon Arena Map -->
+        <div class="map-card featured-map" data-map="arena">
+          <div class="map-badge">RECOMMENDED</div>
+          <div class="map-preview arena-preview">
+            <div class="map-tag neon">TOURNAMENT</div>
+          </div>
+          <div class="map-info">
+            <h3 class="map-name">RIVALS NEON ARENA</h3>
+            <p class="map-desc">High-speed competitive stadium with bounce pads, elevated catwalks, neon cover, and fast respawns.</p>
+            <div class="map-stats">
+              <span>Difficulty: <strong>Normal</strong></span>
+              <span>Layout: <strong>Vertical & Jump Pads</strong></span>
+            </div>
+            <button class="rival-btn select-map-btn" data-map="arena">DEPLOY HERE</button>
+          </div>
+        </div>
+
+        <!-- Warehouse Rumble Map -->
+        <div class="map-card" data-map="warehouse">
+          <div class="map-preview warehouse-preview">
+            <div class="map-tag industrial">COMBAT ZONE</div>
+          </div>
+          <div class="map-info">
+            <h3 class="map-name">WAREHOUSE RUMBLE</h3>
+            <p class="map-desc">Shipping containers, sniper perches, narrow alleyways, and explosive barrels.</p>
+            <div class="map-stats">
+              <span>Difficulty: <strong>Medium</strong></span>
+              <span>Layout: <strong>Cover & Sniping</strong></span>
+            </div>
+            <button class="rival-btn select-map-btn" data-map="warehouse">DEPLOY HERE</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW TO PLAY MODAL -->
+  <div id="modal-how-to-play" class="modal-overlay">
+    <div class="modal-box info-modal-box">
+      <div class="modal-header">
+        <h2 class="modal-title">HOW TO PLAY</h2>
+        <button class="modal-close-btn" data-close="modal-how-to-play">&times;</button>
+      </div>
+
+      <div class="guide-scrollable">
+        <div class="guide-section">
+          <h3>🎮 MOVEMENT & COMBAT CONTROLS</h3>
+          <div class="controls-grid">
+            <div class="control-key-card"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd><span>Move</span></div>
+            <div class="control-key-card"><kbd>MOUSE</kbd><span>Aim / Look</span></div>
+            <div class="control-key-card"><kbd>LEFT CLICK</kbd><span>Shoot / Attack</span></div>
+            <div class="control-key-card"><kbd>RIGHT CLICK</kbd><span>Aim Down Sights (ADS)</span></div>
+            <div class="control-key-card"><kbd>SPACE</kbd><span>Jump (Step on Pads to launch!)</span></div>
+            <div class="control-key-card"><kbd>SHIFT</kbd><span>Sprint</span></div>
+            <div class="control-key-card"><kbd>C</kbd> or <kbd>CTRL</kbd><span>Slide Dash (Sprint + Slide)</span></div>
+            <div class="control-key-card"><kbd>R</kbd><span>Reload</span></div>
+            <div class="control-key-card"><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd><span>Primary / Secondary / Melee</span></div>
+            <div class="control-key-card"><kbd>TAB</kbd><span>Scoreboard</span></div>
+            <div class="control-key-card"><kbd>ESC</kbd><span>Pause / Menu</span></div>
+          </div>
+        </div>
+
+        <div class="guide-section">
+          <h3>💎 GEMS & 🔑 KEYS ECONOMY</h3>
+          <div class="economy-explanation">
+            <div class="eco-card eco-gems">
+              <div class="eco-icon">💎</div>
+              <div class="eco-title">GEMS (FROM KILLS)</div>
+              <p>Eliminate AI bots in matches to earn <strong>10 Gems per kill</strong>. Land a headshot for a <strong>+5 Gem bonus</strong>!</p>
+              <div class="eco-use">➔ Used in the Shop to buy <strong>Weapon Crates</strong> to unlock rare & legendary Gun Skins!</div>
+            </div>
+            <div class="eco-card eco-keys">
+              <div class="eco-icon">🔑</div>
+              <div class="eco-title">KEYS (FROM QUESTS)</div>
+              <p>Complete match challenges in the <strong>Quests Tab</strong> (e.g., getting kills, headshots, or sniper eliminations).</p>
+              <div class="eco-use">➔ Used in the Loadout to permanently unlock <strong>New Guns</strong> (Shotgun, Sniper, SMGs, Revolver, Katana)!</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="guide-section">
+          <h3>🎯 PRO TIPS FOR SURVIVAL</h3>
+          <ul class="tips-list">
+            <li><strong>Aim for the Head:</strong> Headshots deal 2x critical damage with a gold damage number and instant ding sound!</li>
+            <li><strong>Slide to Evade:</strong> Sprinting and pressing <kbd>C</kbd> initiates a high-velocity slide, making you harder for bots to hit.</li>
+            <li><strong>Shield Regeneration:</strong> You have 100 Health + 50 Shield. If you take damage, stay behind cover for 4 seconds to regenerate your shield.</li>
+            <li><strong>Jump Pads in Arena:</strong> Step onto circular glowing pads in the Neon Arena to launch into the air for aerial dominance!</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="rival-btn primary-btn" data-close="modal-how-to-play">GOT IT, LET'S FIGHT!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOADOUT & SHOP SCREEN -->
+  <div id="screen-loadout" class="menu-screen">
+    <div class="menu-bg-gradient"></div>
+
+    <!-- Header bar -->
+    <header class="menu-header">
+      <div class="header-left">
+        <button id="btn-loadout-back" class="rival-btn back-btn">&larr; BACK TO MENU</button>
+        <h2 class="section-title">ARSENAL & CUSTOMIZATION</h2>
+      </div>
+
+      <div class="currency-bar">
+        <div class="currency-item keys-badge">
+          <span class="currency-icon">🔑</span>
+          <span class="currency-amount" id="loadout-keys-count">0</span>
+          <span class="currency-label">KEYS</span>
+        </div>
+        <div class="currency-item gems-badge">
+          <span class="currency-icon">💎</span>
+          <span class="currency-amount" id="loadout-gems-count">0</span>
+          <span class="currency-label">GEMS</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Sub Navigation Tabs: Guns (Keys) vs Crates & Skins (Gems) -->
+    <div class="loadout-nav">
+      <button class="tab-btn active" data-tab="tab-weapons">
+        <span class="tab-icon">🔫</span> WEAPONS ARSENAL (BUY WITH KEYS)
+      </button>
+      <button class="tab-btn" data-tab="tab-crates">
+        <span class="tab-icon">📦</span> CRATE UNBOXING (BUY WITH GEMS)
+      </button>
+      <button class="tab-btn" data-tab="tab-skins">
+        <span class="tab-icon">🎨</span> SKINS WARDROBE
+      </button>
+    </div>
+
+    <!-- Tab 1: Weapons Arsenal -->
+    <div id="tab-weapons" class="tab-content active">
+      <div class="loadout-layout">
+        <!-- Weapon Categories & List -->
+        <div class="loadout-list-panel">
+          <div class="category-selectors">
+            <button class="cat-pill active" data-category="primary">PRIMARY</button>
+            <button class="cat-pill" data-category="secondary">SECONDARY</button>
+            <button class="cat-pill" data-category="melee">MELEE</button>
+          </div>
+          <div class="weapons-grid" id="weapons-grid">
+            <!-- Weapon items dynamically rendered -->
+          </div>
+        </div>
+
+        <!-- 3D Preview & Weapon Details -->
+        <div class="loadout-preview-panel">
+          <div class="preview-3d-box">
+            <canvas id="weapon-preview-canvas"></canvas>
+            <div class="preview-hint">DRAG TO ROTATE 3D MODEL</div>
+          </div>
+          <div class="selected-weapon-card">
+            <div class="selected-header">
+              <div>
+                <h3 id="preview-weapon-name" class="preview-weapon-name">RIVAL AR-15</h3>
+                <span id="preview-weapon-type" class="preview-weapon-type">ASSAULT RIFLE &bull; PRIMARY</span>
+              </div>
+              <div id="preview-weapon-status" class="preview-weapon-status equipped">EQUIPPED</div>
+            </div>
+
+            <!-- Weapon Stat Bars -->
+            <div class="stats-bars">
+              <div class="stat-row">
+                <span class="stat-name">DAMAGE</span>
+                <div class="stat-bar-bg"><div class="stat-bar-fill" id="stat-damage" style="width: 65%;"></div></div>
+                <span class="stat-val" id="stat-damage-val">24</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-name">FIRE RATE</span>
+                <div class="stat-bar-bg"><div class="stat-bar-fill" id="stat-firerate" style="width: 70%;"></div></div>
+                <span class="stat-val" id="stat-firerate-val">600 RPM</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-name">ACCURACY</span>
+                <div class="stat-bar-bg"><div class="stat-bar-fill" id="stat-accuracy" style="width: 80%;"></div></div>
+                <span class="stat-val" id="stat-accuracy-val">80%</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-name">MAG SIZE</span>
+                <div class="stat-bar-bg"><div class="stat-bar-fill" id="stat-mag" style="width: 60%;"></div></div>
+                <span class="stat-val" id="stat-mag-val">30</span>
+              </div>
+            </div>
+
+            <!-- Action button (Equip or Buy with Keys) -->
+            <div class="preview-actions">
+              <button id="btn-weapon-action" class="rival-btn primary-btn action-full-btn">EQUIP WEAPON</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 2: Crates Unboxing -->
+    <div id="tab-crates" class="tab-content">
+      <div class="crates-container">
+        <div class="crates-banner">
+          <h2>UNBOX EXCLUSIVE WEAPON SKINS</h2>
+          <p>Spend Gems earned from eliminating bots to unlock rare, epic, legendary & animated skins!</p>
+        </div>
+
+        <div class="crates-grid">
+          <!-- Standard Crate -->
+          <div class="crate-card standard-crate">
+            <div class="crate-visual">
+              <div class="crate-3d-icon">📦</div>
+              <div class="crate-glow standard-glow"></div>
+            </div>
+            <h3 class="crate-title">STANDARD CRATE</h3>
+            <p class="crate-desc">Great starting crate containing common, rare, and chance of epic skins.</p>
+            <div class="crate-odds">
+              <span class="odd-badge common">Common: 65%</span>
+              <span class="odd-badge rare">Rare: 25%</span>
+              <span class="odd-badge epic">Epic: 10%</span>
+            </div>
+            <button class="rival-btn buy-crate-btn" data-crate="standard" data-cost="100">
+              <span>OPEN FOR <strong>100 💎</strong></span>
+            </button>
+          </div>
+
+          <!-- Elite Rivals Crate -->
+          <div class="crate-card rivals-crate featured-crate">
+            <div class="popular-ribbon">POPULAR</div>
+            <div class="crate-visual">
+              <div class="crate-3d-icon">🎁</div>
+              <div class="crate-glow rivals-glow"></div>
+            </div>
+            <h3 class="crate-title">ELITE RIVALS CRATE</h3>
+            <p class="crate-desc">High chance for Epic & Legendary glowing weapon skins.</p>
+            <div class="crate-odds">
+              <span class="odd-badge rare">Rare: 45%</span>
+              <span class="odd-badge epic">Epic: 40%</span>
+              <span class="odd-badge legendary">Legendary: 15%</span>
+            </div>
+            <button class="rival-btn buy-crate-btn gold-btn" data-crate="rivals" data-cost="250">
+              <span>OPEN FOR <strong>250 💎</strong></span>
+            </button>
+          </div>
+
+          <!-- Mythic Void Crate -->
+          <div class="crate-card void-crate">
+            <div class="crate-visual">
+              <div class="crate-3d-icon">🔮</div>
+              <div class="crate-glow void-glow"></div>
+            </div>
+            <h3 class="crate-title">MYTHIC VOID CRATE</h3>
+            <p class="crate-desc">The ultimate crate! Guaranteed Epic or higher with Mythic animated skins.</p>
+            <div class="crate-odds">
+              <span class="odd-badge epic">Epic: 45%</span>
+              <span class="odd-badge legendary">Legendary: 40%</span>
+              <span class="odd-badge mythic">Mythic: 15%</span>
+            </div>
+            <button class="rival-btn buy-crate-btn purple-btn" data-crate="void" data-cost="500">
+              <span>OPEN FOR <strong>500 💎</strong></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 3: Skins Wardrobe -->
+    <div id="tab-skins" class="tab-content">
+      <div class="skins-container">
+        <div class="skins-header-info">
+          <h3>YOUR UNLOCKED SKINS</h3>
+          <p>Click on any skin you own to equip it onto your currently selected weapon.</p>
+        </div>
+        <div class="skins-grid" id="skins-grid">
+          <!-- Skins dynamically rendered -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUESTS SCREEN -->
+  <div id="screen-quests" class="menu-screen">
+    <div class="menu-bg-gradient"></div>
+
+    <header class="menu-header">
+      <div class="header-left">
+        <button id="btn-quests-back" class="rival-btn back-btn">&larr; BACK TO MENU</button>
+        <h2 class="section-title">COMBAT QUESTS &amp; CONTRACTS</h2>
+      </div>
+
+      <div class="currency-bar">
+        <div class="currency-item keys-badge">
+          <span class="currency-icon">🔑</span>
+          <span class="currency-amount" id="quests-keys-count">0</span>
+          <span class="currency-label">KEYS</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="quests-content-container">
+      <div class="quests-intro-card">
+        <div class="intro-icon">📜</div>
+        <div>
+          <h3>COMPLETE QUESTS TO EARN KEYS</h3>
+          <p>Keys are the premium combat token required to buy new weapons in your Loadout. Fight bots in any map to make progress!</p>
+        </div>
+      </div>
+
+      <div class="quests-list" id="quests-list">
+        <!-- Dynamically rendered quests -->
+      </div>
+    </div>
+  </div>
+
+  <!-- CRATE OPENING ANIMATION OVERLAY -->
+  <div id="crate-opening-overlay" class="crate-overlay">
+    <div class="unboxing-stage">
+      <div class="unboxing-particles" id="crate-particles"></div>
+      <div class="unboxing-box-3d" id="unboxing-box-elem">
+        <div class="crate-cube">
+          <div class="cube-face front">📦</div>
+          <div class="cube-face back">📦</div>
+          <div class="cube-face top">✨</div>
+          <div class="cube-face bottom"></div>
+          <div class="cube-face left">📦</div>
+          <div class="cube-face right">📦</div>
+        </div>
+      </div>
+
+      <div class="crate-status-text" id="crate-status-text">UNLOCKING CRATE...</div>
+
+      <!-- Result Card (shown after open) -->
+      <div class="skin-reward-card" id="skin-reward-card" style="display: none;">
+        <div class="reward-glow" id="reward-glow"></div>
+        <div class="reward-rarity" id="reward-rarity">LEGENDARY</div>
+        <div class="reward-preview-box">
+          <div class="reward-skin-circle" id="reward-skin-circle"></div>
+        </div>
+        <h2 class="reward-skin-name" id="reward-skin-name">MAGMA CORE</h2>
+        <p class="reward-skin-desc" id="reward-skin-desc">Pulsing molten volcanic veins of energy.</p>
+        <button id="btn-claim-reward" class="rival-btn primary-btn">EQUIP &amp; CONTINUE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- IN-GAME HUD -->
+  <div id="game-hud" class="hud-screen">
+    <!-- Top Bar: Match Score & Timer -->
+    <div class="hud-top">
+      <div class="match-score-badge">
+        <div class="score-team blue-team">
+          <span class="team-label">YOU</span>
+          <span class="team-score" id="hud-player-score">0</span>
+        </div>
+        <div class="match-vs">VS</div>
+        <div class="score-team red-team">
+          <span class="team-score" id="hud-bot-score">0</span>
+          <span class="team-label">BOTS</span>
+        </div>
+      </div>
+      <div class="match-goal-text">FIRST TO 20 KILLS</div>
+    </div>
+
+    <!-- Kill Feed Top Right -->
+    <div class="kill-feed" id="kill-feed"></div>
+
+    <!-- Center Reticle / Crosshair -->
+    <div class="reticle-container" id="reticle-container">
+      <div class="reticle-center"></div>
+      <div class="reticle-line reticle-top"></div>
+      <div class="reticle-line reticle-bottom"></div>
+      <div class="reticle-line reticle-left"></div>
+      <div class="reticle-line reticle-right"></div>
+      <!-- Hitmarker 'X' ticks -->
+      <div class="hitmarker" id="hitmarker">
+        <div class="hm-tick hm-tl"></div>
+        <div class="hm-tick hm-tr"></div>
+        <div class="hm-tick hm-bl"></div>
+        <div class="hm-tick hm-br"></div>
+      </div>
+    </div>
+
+    <!-- Sniper Scope Overlay -->
+    <div class="sniper-scope-overlay" id="sniper-scope-overlay" style="display: none;">
+      <div class="scope-outer-black"></div>
+      <div class="scope-cross-vert"></div>
+      <div class="scope-cross-horiz"></div>
+      <div class="scope-range-lines"></div>
+      <div class="scope-center-dot"></div>
+    </div>
+
+    <!-- Floating Kill / Streak Announcements Center -->
+    <div class="kill-announcement" id="kill-announcement"></div>
+
+    <!-- Currency Gain Alerts (+10 Gems) -->
+    <div class="currency-gain-container" id="currency-gain-container"></div>
+
+    <!-- Floating 3D Damage Numbers Container -->
+    <div id="damage-numbers-container"></div>
+
+    <!-- Damage Vignette (Red flash on getting shot) -->
+    <div class="damage-vignette" id="damage-vignette"></div>
+
+    <!-- Bottom Left: Health & Shield -->
+    <div class="hud-bottom-left">
+      <!-- Shield Bar -->
+      <div class="vital-row shield-row">
+        <span class="vital-icon">🛡️</span>
+        <div class="vital-bar-bg">
+          <div class="vital-bar-fill shield-fill" id="hud-shield-fill" style="width: 100%;"></div>
+        </div>
+        <span class="vital-number" id="hud-shield-text">50</span>
+      </div>
+      <!-- Health Bar -->
+      <div class="vital-row health-row">
+        <span class="vital-icon">❤️</span>
+        <div class="vital-bar-bg">
+          <div class="vital-bar-fill health-fill" id="hud-health-fill" style="width: 100%;"></div>
+        </div>
+        <span class="vital-number" id="hud-health-text">100</span>
+      </div>
+    </div>
+
+    <!-- Bottom Right: Ammo & Weapon -->
+    <div class="hud-bottom-right">
+      <div class="weapon-hud-card">
+        <div class="active-weapon-display">
+          <span class="hud-weapon-name" id="hud-weapon-name">RIVAL AR-15</span>
+          <span class="hud-weapon-skin" id="hud-weapon-skin">CYBER NEON</span>
+        </div>
+        <div class="ammo-display">
+          <span class="ammo-current" id="hud-ammo-current">30</span>
+          <span class="ammo-divider">/</span>
+          <span class="ammo-reserve" id="hud-ammo-reserve">90</span>
+        </div>
+        <div class="weapon-slots-mini">
+          <div class="slot-pill active" id="slot-pill-1"><span class="slot-num">1</span> <span id="slot-name-1">AR</span></div>
+          <div class="slot-pill" id="slot-pill-2"><span class="slot-num">2</span> <span id="slot-name-2">PISTOL</span></div>
+          <div class="slot-pill" id="slot-pill-3"><span class="slot-num">3</span> <span id="slot-name-3">KNIFE</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sliding & Movement indicator -->
+    <div class="hud-movement-status" id="hud-movement-status"></div>
+
+    <!-- Pointer lock click-to-play notice -->
+    <div class="pointer-lock-prompt" id="pointer-lock-prompt">
+      <div class="pl-box">
+        <h3>CLICK ANYWHERE TO ENGAGE</h3>
+        <p>[WASD] Move &bull; [Mouse] Aim &bull; [Shift] Sprint &bull; [C/Ctrl] Slide &bull; [Space] Jump &bull; [R] Reload</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB SCOREBOARD OVERLAY -->
+  <div id="scoreboard-overlay" class="scoreboard-overlay">
+    <div class="scoreboard-card">
+      <div class="sb-header">
+        <h2>RIVALS COMBAT LEADERBOARD</h2>
+        <span class="sb-map-label" id="sb-map-label">MAP: RIVALS NEON ARENA</span>
+      </div>
+      <table class="sb-table">
+        <thead>
+          <tr>
+            <th>PLAYER</th>
+            <th>KILLS</th>
+            <th>HEADSHOTS</th>
+            <th>DEATHS</th>
+            <th>K/D</th>
+            <th>SCORE</th>
+          </tr>
+        </thead>
+        <tbody id="sb-tbody">
+          <!-- Dynamically filled -->
+        </tbody>
+      </table>
+      <div class="sb-footer">HOLD [TAB] TO VIEW SCOREBOARD &bull; [ESC] TO PAUSE</div>
+    </div>
+  </div>
+
+  <!-- PAUSE MENU -->
+  <div id="modal-pause" class="modal-overlay">
+    <div class="modal-box pause-modal-box">
+      <h2 class="modal-title">GAME PAUSED</h2>
+      <div class="pause-menu-buttons">
+        <button id="btn-resume-game" class="rival-btn primary-btn">RESUME COMBAT</button>
+        <button id="btn-pause-how-to-play" class="rival-btn info-btn">HOW TO PLAY</button>
+        <button id="btn-quit-to-menu" class="rival-btn danger-btn">QUIT TO MAIN MENU</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MATCH END / VICTORY MODAL -->
+  <div id="modal-match-end" class="modal-overlay">
+    <div class="modal-box match-end-box">
+      <div class="end-title-banner" id="match-end-banner">VICTORY!</div>
+      <p class="end-sub" id="match-end-sub">YOU DOMINATED THE ARENA</p>
+
+      <div class="end-rewards-summary">
+        <div class="reward-stat-card">
+          <div class="stat-icon">💎</div>
+          <div class="stat-num" id="end-gems-earned">+120</div>
+          <div class="stat-label">GEMS EARNED</div>
+        </div>
+        <div class="reward-stat-card">
+          <div class="stat-icon">🎯</div>
+          <div class="stat-num" id="end-kills-count">20</div>
+          <div class="stat-label">TOTAL KILLS</div>
+        </div>
+        <div class="reward-stat-card">
+          <div class="stat-icon">💀</div>
+          <div class="stat-num" id="end-headshots-count">8</div>
+          <div class="stat-label">HEADSHOTS</div>
+        </div>
+        <div class="reward-stat-card">
+          <div class="stat-icon">🔑</div>
+          <div class="stat-num" id="end-keys-earned">+5</div>
+          <div class="stat-label">QUEST KEYS</div>
+        </div>
+      </div>
+
+      <div class="end-actions">
+        <button id="btn-play-again" class="rival-btn primary-btn">PLAY AGAIN</button>
+        <button id="btn-end-return-menu" class="rival-btn secondary-btn">MAIN MENU</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio unlock prompt (standard browser user gesture requirement) -->
+  <div id="audio-starter" style="display:none;"></div>
+
+  <!-- Application Modules -->
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
